@@ -21,6 +21,8 @@
       padding: 18px;
       min-height: 100vh;
     }
+
+    /* ── Header ── */
     .header {
       background: linear-gradient(135deg, #1565c0 0%, #1976d2 60%, #42a5f5 100%);
       color: white;
@@ -35,65 +37,377 @@
     }
     .header h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
     .header .subtitle { font-size: 12px; opacity: 0.8; margin-top: 3px; }
-    .header .updated { font-size: 11px; opacity: 0.75; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
-    .cards-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 14px; }
-    .card { background: white; border-radius: 10px; padding: 14px 12px 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); border-top: 4px solid; transition: transform 0.15s; }
+    .header .updated {
+      font-size: 11px; opacity: 0.75;
+      background: rgba(255,255,255,0.15);
+      padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+    }
+
+    /* ── Institution summary cards ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .card {
+      background: white; border-radius: 10px;
+      padding: 14px 12px 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      border-top: 4px solid;
+      transition: transform 0.15s;
+    }
     .card:hover { transform: translateY(-2px); }
     .card .inst-name { font-size: 11px; color: #718096; font-weight: 600; line-height: 1.5; min-height: 33px; }
     .card .total { font-size: 34px; font-weight: 800; margin-top: 6px; line-height: 1; }
     .card .unit { font-size: 12px; color: #a0aec0; margin-top: 2px; }
-    .card .trend { font-size: 11px; margin-top: 6px; padding: 2px 6px; border-radius: 10px; display: inline-block; }
-    .trend-up { background: #fef2f2; color: #e53e3e; }
+    .card .trend {
+      font-size: 11px; margin-top: 6px;
+      padding: 2px 6px; border-radius: 10px; display: inline-block;
+    }
+    .trend-up   { background: #fef2f2; color: #e53e3e; }
     .trend-down { background: #f0fff4; color: #38a169; }
     .trend-same { background: #f7fafc; color: #718096; }
-    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-    .chart-box { background: white; border-radius: 10px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
-    .chart-box h3 { font-size: 13px; color: #4a5568; margin-bottom: 12px; font-weight: 700; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; }
+
+    /* ── Charts row ── */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .chart-box {
+      background: white; border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .chart-box h3 {
+      font-size: 13px; color: #4a5568; margin-bottom: 12px;
+      font-weight: 700; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0;
+    }
     .chart-wrap { position: relative; height: 220px; }
-    .section-title { font-size: 14px; font-weight: 700; color: #4a5568; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .sup-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 14px; }
-    .sup-card { background: white; border-radius: 10px; padding: 14px 14px 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); border-top: 3px solid; }
-    .sup-card .inst-label { font-size: 11px; font-weight: 700; color: #4a5568; margin-bottom: 10px; padding-bottom: 7px; border-bottom: 1px solid #e2e8f0; }
+
+    /* ── Supervisor detail section ── */
+    .section-title {
+      font-size: 14px; font-weight: 700; color: #4a5568;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .sup-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .sup-card {
+      background: white; border-radius: 10px;
+      padding: 14px 14px 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      border-top: 3px solid;
+    }
+    .sup-card .inst-label {
+      font-size: 11px; font-weight: 700; color: #4a5568;
+      margin-bottom: 10px; padding-bottom: 7px;
+      border-bottom: 1px solid #e2e8f0;
+    }
     .sup-table { width: 100%; border-collapse: collapse; }
     .sup-table tr { border-bottom: 1px solid #f0f4f8; }
     .sup-table tr:last-child { border-bottom: none; }
-    .sup-table td { padding: 5px 2px; font-size: 11.5px; vertical-align: middle; }
-    .sup-table td:first-child { color: #4a5568; width: 60%; }
-    .sup-table td.count-cell { text-align: right; font-weight: 700; color: #2d3748; white-space: nowrap; width: 28px; }
+    .sup-table td {
+      padding: 5px 2px;
+      font-size: 11.5px;
+      vertical-align: middle;
+    }
+    .sup-table td:first-child {
+      color: #4a5568;
+      width: 60%;
+    }
+    .sup-table td.count-cell {
+      text-align: right;
+      font-weight: 700;
+      color: #2d3748;
+      white-space: nowrap;
+      width: 28px;
+    }
     .sup-table td.bar-cell { width: 40%; padding-left: 6px; }
-    .bar-bg { background: #edf2f7; border-radius: 4px; height: 6px; overflow: hidden; }
+    .bar-bg {
+      background: #edf2f7; border-radius: 4px; height: 6px; overflow: hidden;
+    }
     .bar-fill { height: 6px; border-radius: 4px; transition: width 0.4s; }
+
+    /* ── No data ── */
     .no-data-msg { text-align: center; padding: 50px 20px; color: #a0aec0; }
     .no-data-msg .icon { font-size: 36px; margin-bottom: 10px; }
     .no-data-msg p { font-size: 13px; }
-    @media (max-width: 900px) { .sup-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 750px) { .cards-grid { grid-template-columns: repeat(3, 1fr); } .charts-row { grid-template-columns: 1fr; } .sup-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 480px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } .sup-grid { grid-template-columns: 1fr; } }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .sup-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 750px) {
+      .cards-grid { grid-template-columns: repeat(3, 1fr); }
+      .charts-row { grid-template-columns: 1fr; }
+      .sup-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+      .sup-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
+
+<!-- ════════════════════════════════════════════════════════
+     DASHBOARD DATA — 由排程任務每週一 08:00 自動更新
+     請勿手動修改此區塊
+     ════════════════════════════════════════════════════════ -->
 <!-- BEGIN_DASHBOARD_DATA -->
 <script id="dashboard-data-script">
-const DASHBOARD_DATA = {"lastUpdated":"2026-05-25T17:15:36","history":[{"week":"2026-05-25","label":"5月第4週","institutions":{"平安居家（高雄）":199,"健康居家":408,"快樂居家":196,"惠群居家":197,"臺東健康居家":68},"supervisors":{"平安居家（高雄）":{"蘇宇萱-督導":61,"陳佳鑫-督導":48,"張佳喻-督導":48,"吳崇鈺-督導":42},"健康居家":{"楊韻蓉-居督":69,"朱家靚-居督":62,"黃郁婷-居督":58,"李品昀-居督":57,"張意倫-居督":51,"盧欣彥-居督":34,"阮莚淳":30,"張詠程-居督":25,"洪芳佳-居督":22},"快樂居家":{"B063許媖婷":70,"B057鄒喜庭":64,"B059張藝諼":62},"惠群居家":{"張霈旋(潮州鎮)":63,"陳媛琳(萬巒鄉)":59,"施治伶(萬丹鄉)":59,"簡惠芬(屏東市)":16},"臺東健康居家":{"賴俞汶-督導員":66,"（無督導）":2}}}]};
+const DASHBOARD_DATA = {
+  "lastUpdated": "2026-05-25T17:15:36",
+  "history": [
+    {
+      "week": "2026-05-25",
+      "label": "5月第4週",
+      "institutions": {
+        "平安居家（高雄）": 199,
+        "健康居家": 408,
+        "快樂居家": 196,
+        "惠群居家": 197,
+        "臺東健康居家": 68
+      },
+      "supervisors": {
+        "平安居家（高雄）": {"蘇宇萱-督導": 61, "陳佳鑫-督導": 48, "張佳喻-督導": 48, "吳崇鈺-督導": 42},
+        "健康居家": {"楊韻蓉-居督": 69, "朱家靚-居督": 62, "黃郁婷-居督": 58, "李品昀-居督": 57, "張意倫-居督": 51, "盧欣彥-居督": 34, "阮莚淳": 30, "張詠程-居督": 25, "洪芳佳-居督": 22},
+        "快樂居家": {"B063許媖婷": 70, "B057鄒喜庭": 64, "B059張藝諼": 62},
+        "惠群居家": {"張霈旋(潮州鎮)": 63, "陳媛琳(萬巒鄉)": 59, "施治伶(萬丹鄉)": 59, "簡惠芬(屏東市)": 16},
+        "臺東健康居家": {"賴俞汶-督導員": 66, "（無督導）": 2}
+      }
+    }
+  ]
+};
 </script>
 <!-- END_DASHBOARD_DATA -->
-<div class="header"><div><h1>🏠 居服督導個案數量儀表板</h1><div class="subtitle">統計範圍：服務中狀態 × 案號開頭 A / B / C</div></div><div class="updated" id="updated-label">尚未取得資料</div></div>
+
+<!-- ── Header ── -->
+<div class="header">
+  <div>
+    <h1>🏠 居服督導個案數量儀表板</h1>
+    <div class="subtitle">統計範圍：服務中狀態 × 案號開頭 A / B / C</div>
+  </div>
+  <div class="updated" id="updated-label">尚未取得資料</div>
+</div>
+
+<!-- ── Institution total cards ── -->
 <div class="cards-grid" id="cards-container"></div>
-<div class="charts-row"><div class="chart-box"><h3>📊 本週各機構個案數比較</h3><div class="chart-wrap"><canvas id="barChart"></canvas></div></div><div class="chart-box"><h3>📈 歷週趨勢</h3><div class="chart-wrap"><canvas id="lineChart"></canvas></div></div></div>
+
+<!-- ── Charts ── -->
+<div class="charts-row">
+  <div class="chart-box">
+    <h3>📊 本週各機構個案數比較</h3>
+    <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+  </div>
+  <div class="chart-box">
+    <h3>📈 歷週趨勢</h3>
+    <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
+  </div>
+</div>
+
+<!-- ── Supervisor detail section ── -->
 <div class="section-title">📋 各督導員案量明細（本週）</div>
 <div class="sup-grid" id="sup-container"></div>
+
 <script>
-const COLORS={"平安居家（高雄）":{border:"#1976d2",bg:"rgba(25,118,210,0.12)",bar:"#1976d2"},"健康居家":{border:"#2e7d32",bg:"rgba(46,125,50,0.12)",bar:"#2e7d32"},"快樂居家":{border:"#e65100",bg:"rgba(230,81,0,0.12)",bar:"#e65100"},"惠群居家":{border:"#6a1b9a",bg:"rgba(106,27,154,0.12)",bar:"#6a1b9a"},"臺東健康居家":{border:"#00838f",bg:"rgba(0,131,143,0.12)",bar:"#00838f"}};
-const BORDER_COLORS=Object.values(COLORS).map(c=>c.border);
-const BG_COLORS=Object.values(COLORS).map(c=>c.bg);
-const{lastUpdated,history}=DASHBOARD_DATA;
-const hasData=history&&history.length>0;
-if(lastUpdated){const d=new Date(lastUpdated);const pad=n=>String(n).padStart(2,"0");document.getElementById("updated-label").textContent="最後更新："+d.getFullYear()+"/"+pad(d.getMonth()+1)+"/"+pad(d.getDate())+" "+pad(d.getHours())+":"+pad(d.getMinutes());}
-function renderCards(){const c=document.getElementById("cards-container");if(!hasData){c.innerHTML='<div class="no-data-msg" style="grid-column:1/-1"><div class="icon">📭</div><p>尚無資料</p></div>';return;}const latest=history[0].institutions;const prev=history.length>1?history[1].institutions:null;Object.keys(latest).forEach((name,i)=>{const total=latest[name];const color=Object.values(COLORS)[i]||{border:"#718096"};let t="";if(prev&&prev[name]!=null){const diff=total-prev[name];if(diff>0)t='<span class="trend trend-up">▲ '+diff+'</span>';else if(diff<0)t='<span class="trend trend-down">▼ '+Math.abs(diff)+'</span>';else t='<span class="trend trend-same">─ 持平</span>';}const card=document.createElement("div");card.className="card";card.style.borderTopColor=color.border;card.innerHTML='<div class="inst-name">'+name+'</div><div class="total" style="color:'+color.border+'">'+(total??"—")+'</div><div class="unit">個案（服務中）</div>'+t;c.appendChild(card);});}
-function renderSupervisors(){const c=document.getElementById("sup-container");if(!hasData){c.innerHTML='<div class="no-data-msg" style="grid-column:1/-1"><div class="icon">📋</div><p>尚無資料</p></div>';return;}const latest=history[0];const supData=latest.supervisors||{};Object.keys(latest.institutions).forEach((instName,i)=>{const color=Object.values(COLORS)[i]||{border:"#718096",bar:"#718096"};const sups=supData[instName]||{};const maxVal=Math.max(...Object.values(sups),1);let rows="";Object.entries(sups).forEach(([n,cnt])=>{const pct=Math.round(cnt/maxVal*100);rows+='<tr><td>'+n+'</td><td class="count-cell">'+cnt+'</td><td class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:'+pct+'%;background:'+color.bar+'"></div></div></td></tr>';});const card=document.createElement("div");card.className="sup-card";card.style.borderTopColor=color.border;card.innerHTML='<div class="inst-label">'+instName+'</div><table class="sup-table">'+rows+'</table>';c.appendChild(card);});}
-function renderBarChart(){const ctx=document.getElementById("barChart");if(!hasData){ctx.parentElement.innerHTML='<div class="no-data-msg"><div class="icon">📊</div><p>尚無資料</p></div>';return;}const latest=history[0].institutions;const labels=Object.keys(latest);new Chart(ctx,{type:"bar",data:{labels,datasets:[{label:"個案數",data:labels.map(n=>latest[n]??0),backgroundColor:labels.map((n,i)=>BG_COLORS[i]||"rgba(0,0,0,0.1)"),borderColor:labels.map((n,i)=>BORDER_COLORS[i]||"#718096"),borderWidth:2,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>" "+c.parsed.y+" 筆"}}},scales:{y:{beginAtZero:true,grid:{color:"rgba(0,0,0,0.05)"},ticks:{font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:10},maxRotation:20}}}}});}
-function renderLineChart(){const ctx=document.getElementById("lineChart");if(!hasData||history.length<2){ctx.parentElement.innerHTML='<div class="no-data-msg"><div class="icon">📈</div><p>累積 2 週以上資料後<br>將顯示趨勢圖</p></div>';return;}const slice=history.slice(0,12).reverse();const labels=slice.map(h=>h.label||h.week);const instNames=Object.keys(history[0].institutions);const colorList=Object.values(COLORS);new Chart(ctx,{type:"line",data:{labels,datasets:instNames.map((name,i)=>({label:name,data:slice.map(h=>h.institutions[name]??null),borderColor:colorList[i]?.border||"#718096",backgroundColor:colorList[i]?.bg||"rgba(0,0,0,0.05)",borderWidth:2,pointRadius:4,tension:0.3,fill:false,spanGaps:true}))},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"bottom",labels:{font:{size:10},boxWidth:12,padding:8}},tooltip:{callbacks:{label:c=>" "+c.dataset.label+"："+c.parsed.y+" 筆"}}},scales:{y:{beginAtZero:false,grid:{color:"rgba(0,0,0,0.05)"},ticks:{font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});}
-renderCards();renderBarChart();renderLineChart();renderSupervisors();
+// ── 顏色配置 ─────────────────────────────────────────────────────────────────
+const COLORS = {
+  "平安居家（高雄）" : { border: "#1976d2", bg: "rgba(25,118,210,0.12)",  bar: "#1976d2" },
+  "健康居家"         : { border: "#2e7d32", bg: "rgba(46,125,50,0.12)",   bar: "#2e7d32" },
+  "快樂居家"         : { border: "#e65100", bg: "rgba(230,81,0,0.12)",    bar: "#e65100" },
+  "惠群居家"         : { border: "#6a1b9a", bg: "rgba(106,27,154,0.12)",  bar: "#6a1b9a" },
+  "臺東健康居家"     : { border: "#00838f", bg: "rgba(0,131,143,0.12)",   bar: "#00838f" },
+};
+const BORDER_COLORS = Object.values(COLORS).map(c => c.border);
+const BG_COLORS     = Object.values(COLORS).map(c => c.bg);
+
+// ── 讀取資料 ─────────────────────────────────────────────────────────────────
+const { lastUpdated, history } = DASHBOARD_DATA;
+const hasData = history && history.length > 0;
+
+// ── 更新時間標籤 ─────────────────────────────────────────────────────────────
+if (lastUpdated) {
+  const d = new Date(lastUpdated);
+  const pad = n => String(n).padStart(2, "0");
+  document.getElementById("updated-label").textContent =
+    `最後更新：${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// ── 機構總計卡片 ─────────────────────────────────────────────────────────────
+function renderCards() {
+  const container = document.getElementById("cards-container");
+  if (!hasData) {
+    container.innerHTML = `
+      <div class="no-data-msg" style="grid-column:1/-1">
+        <div class="icon">📭</div>
+        <p>尚無資料<br>每週一早上 8 點排程任務執行後將自動更新</p>
+      </div>`;
+    return;
+  }
+  const latest    = history[0].institutions;
+  const prev      = history.length > 1 ? history[1].institutions : null;
+  const instNames = Object.keys(latest);
+  const topColors = Object.values(COLORS);
+
+  instNames.forEach((name, i) => {
+    const total = latest[name];
+    const color = topColors[i] || { border: "#718096" };
+    let trendHTML = "";
+    if (prev && prev[name] != null && total != null) {
+      const diff = total - prev[name];
+      if (diff > 0)      trendHTML = `<span class="trend trend-up">▲ ${diff}</span>`;
+      else if (diff < 0) trendHTML = `<span class="trend trend-down">▼ ${Math.abs(diff)}</span>`;
+      else               trendHTML = `<span class="trend trend-same">─ 持平</span>`;
+    }
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.borderTopColor = color.border;
+    card.innerHTML = `
+      <div class="inst-name">${name}</div>
+      <div class="total" style="color:${color.border}">${total ?? "—"}</div>
+      <div class="unit">個案（服務中）</div>
+      ${trendHTML}`;
+    container.appendChild(card);
+  });
+}
+
+// ── 督導明細區塊 ─────────────────────────────────────────────────────────────
+function renderSupervisors() {
+  const container = document.getElementById("sup-container");
+  if (!hasData) {
+    container.innerHTML = `
+      <div class="no-data-msg" style="grid-column:1/-1">
+        <div class="icon">📋</div><p>尚無資料</p>
+      </div>`;
+    return;
+  }
+
+  const latest     = history[0];
+  const instNames  = Object.keys(latest.institutions);
+  const supData    = latest.supervisors || {};
+  const topColors  = Object.values(COLORS);
+
+  instNames.forEach((instName, i) => {
+    const color = topColors[i] || { border: "#718096", bar: "#718096" };
+    const sups  = supData[instName] || {};
+    const maxVal = Math.max(...Object.values(sups), 1);
+
+    let rows = "";
+    Object.entries(sups).forEach(([supName, cnt]) => {
+      const pct = Math.round((cnt / maxVal) * 100);
+      rows += `
+        <tr>
+          <td>${supName}</td>
+          <td class="count-cell">${cnt}</td>
+          <td class="bar-cell">
+            <div class="bar-bg">
+              <div class="bar-fill" style="width:${pct}%;background:${color.bar}"></div>
+            </div>
+          </td>
+        </tr>`;
+    });
+
+    if (!rows) {
+      rows = `<tr><td colspan="3" style="color:#a0aec0;font-size:11px;padding:8px 0">無資料</td></tr>`;
+    }
+
+    const card = document.createElement("div");
+    card.className = "sup-card";
+    card.style.borderTopColor = color.border;
+    card.innerHTML = `
+      <div class="inst-label">${instName}</div>
+      <table class="sup-table">${rows}</table>`;
+    container.appendChild(card);
+  });
+}
+
+// ── 長條圖（本週比較）────────────────────────────────────────────────────────
+function renderBarChart() {
+  const ctx = document.getElementById("barChart");
+  if (!hasData) {
+    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">📊</div><p>尚無資料</p></div>`;
+    return;
+  }
+  const latest   = history[0].institutions;
+  const labels   = Object.keys(latest);
+  const vals     = labels.map(n => latest[n] ?? 0);
+  const colors   = labels.map((n, i) => BORDER_COLORS[i] || "#718096");
+  const bgColors = labels.map((n, i) => BG_COLORS[i] || "rgba(0,0,0,0.1)");
+
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{ label: "個案數", data: vals,
+        backgroundColor: bgColors, borderColor: colors,
+        borderWidth: 2, borderRadius: 6 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y} 筆` } }
+      },
+      scales: {
+        y: { beginAtZero: true, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 20 } }
+      }
+    }
+  });
+}
+
+// ── 折線圖（歷週趨勢）────────────────────────────────────────────────────────
+function renderLineChart() {
+  const ctx = document.getElementById("lineChart");
+  if (!hasData || history.length < 2) {
+    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">📈</div><p>累積 2 週以上資料後<br>將顯示趨勢圖</p></div>`;
+    return;
+  }
+  const slice     = history.slice(0, 12).reverse();
+  const labels    = slice.map(h => h.label || h.week);
+  const instNames = Object.keys(history[0].institutions);
+  const colorList = Object.values(COLORS);
+
+  const datasets = instNames.map((name, i) => ({
+    label: name,
+    data: slice.map(h => h.institutions[name] ?? null),
+    borderColor: colorList[i]?.border || "#718096",
+    backgroundColor: colorList[i]?.bg || "rgba(0,0,0,0.05)",
+    borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
+    tension: 0.3, fill: false, spanGaps: true,
+  }));
+
+  new Chart(ctx, {
+    type: "line",
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { position: "bottom", labels: { font: { size: 10 }, boxWidth: 12, padding: 8 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}：${ctx.parsed.y} 筆` } }
+      },
+      scales: {
+        y: { beginAtZero: false, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// ── 初始化 ────────────────────────────────────────────────────────────────────
+renderCards();
+renderBarChart();
+renderLineChart();
+renderSupervisors();
 </script>
 </body>
 </html>
