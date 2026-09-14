@@ -171,6 +171,60 @@
       .cards-grid { grid-template-columns: repeat(2, 1fr); }
       .sup-grid { grid-template-columns: 1fr; }
     }
+    /* ── 雙口徑：口徑切換列 ── */
+    .scope-bar {
+      background: white; border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      padding: 10px 14px; margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .legend { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #64748b; }
+    .legend-item b { color: #334155; font-weight: 700; }
+    .swatch { width: 12px; height: 12px; border-radius: 3px; flex: 0 0 auto; }
+    .swatch.hold   { background: #cbd5e1; }
+    .swatch.served { background: linear-gradient(90deg,#1976d2,#2e7d32,#e65100,#6a1b9a,#00838f); }
+    .seg { display: inline-flex; background: #eef2f7; border-radius: 8px; padding: 3px; gap: 3px; }
+    .seg button {
+      border: none; background: transparent; cursor: pointer;
+      font-family: inherit; font-size: 11.5px; font-weight: 600; color: #64748b;
+      padding: 5px 12px; border-radius: 6px; white-space: nowrap;
+    }
+    .seg button.active { background: white; color: #1565c0; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+    .seg button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── 卡片：雙數字 ── */
+    .card .metric-row { display: flex; align-items: flex-end; gap: 10px; margin-top: 6px; }
+    .card .metric { line-height: 1; }
+    .card .m-val { font-size: 27px; font-weight: 800; letter-spacing: -0.5px; }
+    .card .m-val.hold { color: #94a3b8; }
+    .card .m-sep { font-size: 20px; color: #cbd5e1; font-weight: 300; padding-bottom: 2px; }
+    .card .m-lab { font-size: 10.5px; color: #a0aec0; margin-top: 5px; white-space: nowrap; }
+    .card .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+    .gap-chip {
+      font-size: 10.5px; padding: 2px 7px; border-radius: 10px;
+      background: #fff7ed; color: #c2410c; font-weight: 600; white-space: nowrap;
+    }
+    .gap-chip.zero { background: #f0fdf4; color: #15803d; }
+    .gap-chip.na   { background: #f7fafc; color: #94a3b8; font-weight: 500; }
+
+    /* ── 督導表：雙數字 + 雙層條 ── */
+    .sup-table tr.thead-row { border-bottom: 1px solid #e2e8f0; }
+    .sup-table tr.thead-row td {
+      font-size: 10px; color: #94a3b8; font-weight: 700;
+      padding-bottom: 4px; text-align: right; white-space: nowrap;
+    }
+    .sup-table td.c-hold   { text-align: right; font-weight: 700; color: #94a3b8; white-space: nowrap; width: 34px; }
+    .sup-table td.c-served { text-align: right; font-weight: 800; white-space: nowrap; width: 34px; padding-left: 6px; }
+    .sup-table td.c-served.na { color: #cbd5e1; font-weight: 600; }
+    .sup-table td.bar-cell { width: 32%; padding-left: 8px; }
+    .bar-bg { position: relative; background: #f1f5f9; border-radius: 4px; height: 7px; overflow: hidden; }
+    .bar-hold   { position: absolute; left: 0; top: 0; height: 7px; border-radius: 4px; background: #cbd5e1; transition: width 0.4s; }
+    .bar-served { position: absolute; left: 0; top: 0; height: 7px; border-radius: 4px; transition: width 0.4s; }
+    .sup-table tr.gap-big td.c-served { color: #c2410c; }
+    .sup-table tr.gap-big td:first-child span:last-child { color: #9a3412; font-weight: 600; }
+
   </style>
 </head>
 <body>
@@ -6236,9 +6290,21 @@ const DASHBOARD_DATA = {
 <div class="header">
   <div>
     <h1>🏠 居服督導個案數量儀表板</h1>
-    <div class="subtitle">統計範圍：服務中狀態 × 案號開頭 A / B / C</div>
+    <div class="subtitle">掛案＝服務中 × 案號 A/B/C ｜ 實服＝當月完成且有服務金額的 BA 碼個案</div>
   </div>
   <div class="updated" id="updated-label">尚未取得資料</div>
+</div>
+
+<!-- ── 口徑切換 ── -->
+<div class="scope-bar">
+  <div class="legend">
+    <div class="legend-item"><span class="swatch hold"></span><b>掛案</b>系統上掛在督導名下的件數</div>
+    <div class="legend-item"><span class="swatch served"></span><b>實服</b>真的有做、有金額的件數</div>
+  </div>
+  <div class="seg" id="scope-seg">
+    <button data-mode="current"  id="btn-current">當月至今</button>
+    <button data-mode="previous" id="btn-previous">上月全月</button>
+  </div>
 </div>
 
 <!-- ── Institution total cards ── -->
@@ -6247,23 +6313,23 @@ const DASHBOARD_DATA = {
 <!-- ── Charts ── -->
 <div class="charts-row">
   <div class="chart-box">
-    <h3>📊 本週各機構個案數比較</h3>
+    <h3>📊 各機構：掛案 vs. 實服</h3>
     <div class="chart-wrap"><canvas id="barChart"></canvas></div>
   </div>
   <div class="chart-box">
-    <h3>📈 歷週趨勢</h3>
+    <h3>📈 掛案歷週趨勢</h3>
     <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
   </div>
 </div>
 
 <!-- ── Aggregate total trend chart ── -->
 <div class="chart-box" style="margin-bottom:14px">
-  <h3>🏢 合計趨勢（高雄 3 家 vs. 全部機構）</h3>
+  <h3>🏢 掛案合計趨勢（高雄 3 家 vs. 全部機構）</h3>
   <div class="chart-wrap"><canvas id="totalChart"></canvas></div>
 </div>
 
 <!-- ── Supervisor detail section ── -->
-<div class="section-title">📋 各督導員案量明細（本週）<span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:4px">點擊督導員可展開各行政區案量</span></div>
+<div class="section-title">📋 各督導員案量明細<span id="sup-scope-label" style="font-size:11px;font-weight:600;color:#1565c0;margin-left:2px"></span><span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:4px">點擊督導員可展開各行政區案量（依掛案）</span></div>
 <div class="sup-grid" id="sup-container"></div>
 
 <script>
@@ -6277,10 +6343,83 @@ const COLORS = {
 };
 const BORDER_COLORS = Object.values(COLORS).map(c => c.border);
 const BG_COLORS     = Object.values(COLORS).map(c => c.bg);
+const HOLD_COLOR    = "#cbd5e1";
 
 // ── 讀取資料 ─────────────────────────────────────────────────────────────────
 const { lastUpdated, history } = DASHBOARD_DATA;
 const hasData = history && history.length > 0;
+const latest  = hasData ? history[0] : null;
+const SERVED  = (latest && latest.served) || null;
+
+// ── 口徑（當月至今 / 上月全月）────────────────────────────────────────────────
+function monthNum(key) {                       // "2026-09" → 9
+  const m = /^(\d{4})-(\d{2})$/.exec(key || "");
+  return m ? Number(m[2]) : null;
+}
+function blockOf(mode) {
+  return SERVED ? SERVED[mode] : null;
+}
+function hasAnyValue(block) {
+  if (!block || !block.institutions) return false;
+  return Object.values(block.institutions).some(v => v != null);
+}
+
+const CUR = blockOf("current");
+const PRE = blockOf("previous");
+
+// 預設：每月 1~10 號看上月（當月才剛開始），之後看當月至今
+let MODE = "current";
+if (hasAnyValue(PRE) && (new Date().getDate() <= 10 || !hasAnyValue(CUR))) MODE = "previous";
+if (!hasAnyValue(PRE) && !hasAnyValue(CUR)) MODE = "current";
+
+function scopeLabel(mode) {
+  const b = blockOf(mode);
+  const mo = monthNum(b && b.month);
+  if (mode === "current") {
+    if (!mo) return "當月至今";
+    const d = b.dayOfMonth, t = b.daysInMonth;
+    return d && t ? `${mo}月至今（1–${d}日／共${t}天）` : `${mo}月至今`;
+  }
+  return mo ? `${mo}月全月` : "上月全月";
+}
+
+function setupSeg() {
+  const seg = document.getElementById("scope-seg");
+  const bc = document.getElementById("btn-current");
+  const bp = document.getElementById("btn-previous");
+  bc.textContent = scopeLabel("current");
+  bp.textContent = scopeLabel("previous");
+  bc.disabled = !hasAnyValue(CUR);
+  bp.disabled = !hasAnyValue(PRE);
+  seg.addEventListener("click", e => {
+    const btn = e.target.closest("button[data-mode]");
+    if (!btn || btn.disabled || btn.dataset.mode === MODE) return;
+    MODE = btn.dataset.mode;
+    syncSeg();
+    renderAll();
+  });
+  syncSeg();
+}
+function syncSeg() {
+  document.querySelectorAll("#scope-seg button").forEach(b => {
+    b.classList.toggle("active", b.dataset.mode === MODE);
+  });
+  const lab = document.getElementById("sup-scope-label");
+  if (lab) lab.textContent = "（實服口徑：" + scopeLabel(MODE) + "）";
+}
+
+// 目前口徑下的實服數字
+function servedTotal(instName) {
+  const b = blockOf(MODE);
+  if (!b || !b.institutions) return null;
+  const v = b.institutions[instName];
+  return v == null ? null : v;
+}
+function servedSups(instName) {
+  if (servedTotal(instName) == null) return null;   // 該機構實服未取得 → 整欄顯示「—」
+  const b = blockOf(MODE);
+  return (b && b.supervisors && b.supervisors[instName]) || null;
+}
 
 // ── X 軸標籤：由實際日期產生「8/27(四)」──────────────────────────────────────
 const WEEKDAY_TW = ["日", "一", "二", "三", "四", "五", "六"];
@@ -6316,37 +6455,60 @@ if (lastUpdated) {
 // ── 機構總計卡片 ─────────────────────────────────────────────────────────────
 function renderCards() {
   const container = document.getElementById("cards-container");
+  container.innerHTML = "";
   if (!hasData) {
     container.innerHTML = `
       <div class="no-data-msg" style="grid-column:1/-1">
         <div class="icon">📭</div>
-        <p>尚無資料<br>每週一早上 8 點排程任務執行後將自動更新</p>
+        <p>尚無資料<br>排程任務執行後將自動更新</p>
       </div>`;
     return;
   }
-  const latest    = history[0].institutions;
+  const cur       = latest.institutions;
   const prev      = history.length > 1 ? history[1].institutions : null;
-  const instNames = Object.keys(latest);
+  const instNames = Object.keys(cur);
   const topColors = Object.values(COLORS);
 
   instNames.forEach((name, i) => {
-    const total = latest[name];
+    const hold  = cur[name];
+    const serv  = servedTotal(name);
     const color = topColors[i] || { border: "#718096" };
+
     let trendHTML = "";
-    if (prev && prev[name] != null && total != null) {
-      const diff = total - prev[name];
-      if (diff > 0)      trendHTML = `<span class="trend trend-up">▲ ${diff}</span>`;
-      else if (diff < 0) trendHTML = `<span class="trend trend-down">▼ ${Math.abs(diff)}</span>`;
-      else               trendHTML = `<span class="trend trend-same">─ 持平</span>`;
+    if (prev && prev[name] != null && hold != null) {
+      const diff = hold - prev[name];
+      if (diff > 0)      trendHTML = `<span class="trend trend-up">掛案 ▲ ${diff}</span>`;
+      else if (diff < 0) trendHTML = `<span class="trend trend-down">掛案 ▼ ${Math.abs(diff)}</span>`;
+      else               trendHTML = `<span class="trend trend-same">掛案 ─ 持平</span>`;
     }
+
+    let gapHTML;
+    if (serv == null || hold == null) {
+      gapHTML = `<span class="gap-chip na">實服資料未取得</span>`;
+    } else {
+      const gap = hold - serv;
+      gapHTML = gap > 0
+        ? `<span class="gap-chip">有掛案未服務 ${gap} 案</span>`
+        : `<span class="gap-chip zero">${gap === 0 ? "全數有服務" : "實服多 " + Math.abs(gap) + " 案"}</span>`;
+    }
+
     const card = document.createElement("div");
     card.className = "card";
     card.style.borderTopColor = color.border;
     card.innerHTML = `
       <div class="inst-name">${name}</div>
-      <div class="total" style="color:${color.border}">${total ?? "—"}</div>
-      <div class="unit">個案（服務中）</div>
-      ${trendHTML}`;
+      <div class="metric-row">
+        <div class="metric">
+          <div class="m-val hold">${hold ?? "—"}</div>
+          <div class="m-lab">掛案</div>
+        </div>
+        <div class="m-sep">/</div>
+        <div class="metric">
+          <div class="m-val" style="color:${color.border}">${serv ?? "—"}</div>
+          <div class="m-lab">實服</div>
+        </div>
+      </div>
+      <div class="chips">${gapHTML}${trendHTML}</div>`;
     container.appendChild(card);
   });
 }
@@ -6354,6 +6516,7 @@ function renderCards() {
 // ── 督導明細區塊 ─────────────────────────────────────────────────────────────
 function renderSupervisors() {
   const container = document.getElementById("sup-container");
+  container.innerHTML = "";
   if (!hasData) {
     container.innerHTML = `
       <div class="no-data-msg" style="grid-column:1/-1">
@@ -6362,38 +6525,61 @@ function renderSupervisors() {
     return;
   }
 
-  const latest     = history[0];
   const instNames  = Object.keys(latest.institutions);
   const supData    = latest.supervisors || {};
   const topColors  = Object.values(COLORS);
 
   instNames.forEach((instName, i) => {
-    const color = topColors[i] || { border: "#718096", bar: "#718096" };
-    const sups  = supData[instName] || {};
+    const color   = topColors[i] || { border: "#718096", bar: "#718096" };
+    const sups    = supData[instName] || {};
+    const servMap = servedSups(instName);
 
     // 正規化：每位督導值可能是數字（舊格式）或 {count, districts}（新格式）
     const entries = Object.entries(sups).map(([supName, val]) => {
-      if (val && typeof val === "object") {
-        return { name: supName, count: val.count ?? 0, districts: val.districts || null };
-      }
-      return { name: supName, count: val ?? 0, districts: null };
+      const base = (val && typeof val === "object")
+        ? { name: supName, count: val.count ?? 0, districts: val.districts || null }
+        : { name: supName, count: val ?? 0, districts: null };
+      base.served = servMap ? (servMap[supName] ?? 0) : null;
+      return base;
     });
-    const maxVal = Math.max(...entries.map(e => e.count), 1);
 
-    let rows = "";
-    entries.forEach(({ name: supName, count: cnt, districts }) => {
-      const pct = Math.round((cnt / maxVal) * 100);
+    // 實服名單裡若出現掛案表沒有的督導（例如已離職／改派），補在最後
+    if (servMap) {
+      Object.entries(servMap).forEach(([supName, n]) => {
+        if (!entries.some(e => e.name === supName)) {
+          entries.push({ name: supName, count: 0, districts: null, served: n });
+        }
+      });
+    }
+
+    const maxVal = Math.max(...entries.map(e => Math.max(e.count, e.served ?? 0)), 1);
+
+    let rows = `
+      <tr class="thead-row">
+        <td style="text-align:left">督導</td><td>掛案</td><td>實服</td><td></td>
+      </tr>`;
+
+    entries.forEach(({ name: supName, count: cnt, districts, served }) => {
+      const holdPct = Math.round((cnt / maxVal) * 100);
+      const servPct = served == null ? 0 : Math.round((served / maxVal) * 100);
       const hasDist = districts && Object.keys(districts).length > 0;
+      const gap     = (served == null || cnt === 0) ? 0 : cnt - served;
+      const gapBig  = served != null && cnt > 0 && (served === 0 || gap / cnt >= 0.2);
       const ico = hasDist
         ? `<span class="toggle-ico">▶</span>`
         : `<span class="toggle-ico" style="visibility:hidden">▶</span>`;
+      const servTxt = served == null
+        ? `<td class="c-served na">—</td>`
+        : `<td class="c-served"${gapBig ? "" : ` style="color:${color.bar}"`}>${served}</td>`;
       rows += `
-        <tr class="sup-row${hasDist ? " has-dist" : ""}">
+        <tr class="sup-row${hasDist ? " has-dist" : ""}${gapBig ? " gap-big" : ""}">
           <td><div class="sup-name-cell">${ico}<span>${supName}</span></div></td>
-          <td class="count-cell">${cnt}</td>
+          <td class="c-hold">${cnt}</td>
+          ${servTxt}
           <td class="bar-cell">
             <div class="bar-bg">
-              <div class="bar-fill" style="width:${pct}%;background:${color.bar}"></div>
+              <div class="bar-hold" style="width:${holdPct}%"></div>
+              <div class="bar-served" style="width:${servPct}%;background:${color.bar}"></div>
             </div>
           </td>
         </tr>`;
@@ -6403,13 +6589,13 @@ function renderSupervisors() {
           .join("");
         rows += `
         <tr class="detail-row" style="display:none">
-          <td colspan="3"><div class="district-list">${chips}</div></td>
+          <td colspan="4"><div class="district-list">${chips}</div></td>
         </tr>`;
       }
     });
 
-    if (!rows) {
-      rows = `<tr><td colspan="3" style="color:#a0aec0;font-size:11px;padding:8px 0">無資料</td></tr>`;
+    if (entries.length === 0) {
+      rows += `<tr><td colspan="4" style="color:#a0aec0;font-size:11px;padding:8px 0">無資料</td></tr>`;
     }
 
     const card = document.createElement("div");
@@ -6433,32 +6619,50 @@ function renderSupervisors() {
   });
 }
 
-// ── 長條圖（本週比較）────────────────────────────────────────────────────────
+// ── 長條圖（掛案 vs 實服）────────────────────────────────────────────────────
+let barChartInst = null;
 function renderBarChart() {
   const ctx = document.getElementById("barChart");
+  if (!ctx) return;
   if (!hasData) {
     ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">📊</div><p>尚無資料</p></div>`;
     return;
   }
-  const latest   = history[0].institutions;
-  const labels   = Object.keys(latest);
-  const vals     = labels.map(n => latest[n] ?? 0);
-  const colors   = labels.map((n, i) => BORDER_COLORS[i] || "#718096");
-  const bgColors = labels.map((n, i) => BG_COLORS[i] || "rgba(0,0,0,0.1)");
+  if (typeof Chart === "undefined") {
+    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">\u26a0\ufe0f</div><p>圖表元件未載入<br>上方數字仍可正常查看</p></div>`;
+    return;
+  }
+  if (barChartInst) barChartInst.destroy();
 
-  new Chart(ctx, {
+  const cur      = latest.institutions;
+  const labels   = Object.keys(cur);
+  const holds    = labels.map(n => cur[n] ?? null);
+  const serves   = labels.map(n => servedTotal(n));
+  const colors   = labels.map((n, i) => BORDER_COLORS[i] || "#718096");
+
+  barChartInst = new Chart(ctx, {
     type: "bar",
     data: {
       labels,
-      datasets: [{ label: "個案數", data: vals,
-        backgroundColor: bgColors, borderColor: colors,
-        borderWidth: 2, borderRadius: 6 }]
+      datasets: [
+        { label: "掛案", data: holds,
+          backgroundColor: HOLD_COLOR, borderColor: HOLD_COLOR,
+          borderWidth: 0, borderRadius: 5, categoryPercentage: 0.7, barPercentage: 0.9 },
+        { label: "實服（" + scopeLabel(MODE) + "）", data: serves,
+          backgroundColor: colors, borderColor: colors,
+          borderWidth: 0, borderRadius: 5, categoryPercentage: 0.7, barPercentage: 0.9 },
+      ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
       plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y} 筆` } }
+        legend: { position: "bottom", labels: { font: { size: 10 }, boxWidth: 12, padding: 8 } },
+        tooltip: { callbacks: {
+          label: c => c.parsed.y == null
+            ? ` ${c.dataset.label}：無資料`
+            : ` ${c.dataset.label}：${c.parsed.y} 案`
+        } }
       },
       scales: {
         y: { beginAtZero: true, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { font: { size: 11 } } },
@@ -6468,11 +6672,15 @@ function renderBarChart() {
   });
 }
 
-// ── 折線圖（歷週趨勢）────────────────────────────────────────────────────────
+// ── 折線圖（掛案歷週趨勢）────────────────────────────────────────────────────
 function renderLineChart() {
   const ctx = document.getElementById("lineChart");
   if (!hasData || history.length < 2) {
     ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">📈</div><p>累積 2 週以上資料後<br>將顯示趨勢圖</p></div>`;
+    return;
+  }
+  if (typeof Chart === "undefined") {
+    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">\u26a0\ufe0f</div><p>圖表元件未載入<br>上方數字仍可正常查看</p></div>`;
     return;
   }
   const slice     = history.slice(0, 12).reverse();
@@ -6511,7 +6719,11 @@ function renderLineChart() {
 function renderTotalChart() {
   const ctx = document.getElementById("totalChart");
   if (!hasData || history.length < 2) {
-    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">\ud83c\udfe2</div><p>累積 2 週以上資料後<br>將顯示合計趨勢</p></div>`;
+    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">🏢</div><p>累積 2 週以上資料後<br>將顯示合計趨勢</p></div>`;
+    return;
+  }
+  if (typeof Chart === "undefined") {
+    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">\u26a0\ufe0f</div><p>圖表元件未載入<br>上方數字仍可正常查看</p></div>`;
     return;
   }
   const slice    = history.slice(0, 12).reverse();
@@ -6556,11 +6768,19 @@ function renderTotalChart() {
 }
 
 // ── 初始化 ────────────────────────────────────────────────────────────────────
-renderCards();
-renderBarChart();
-renderLineChart();
-renderTotalChart();
-renderSupervisors();
+function safe(fn) {
+  try { fn(); } catch (e) { console.error(fn.name + " 失敗：", e); }
+}
+function renderAll() {
+  // 先畫數字表，再畫圖；圖表函式庫載入失敗時數字仍看得到
+  safe(renderCards);
+  safe(renderSupervisors);
+  safe(renderBarChart);
+}
+safe(setupSeg);
+renderAll();
+safe(renderLineChart);
+safe(renderTotalChart);
 </script>
 </body>
 </html>
