@@ -2,7 +2,7 @@
 {
   "name": "Case Dashboard",
   "schemaVersion": 1,
-  "description": "五間機構（平安、健康、快樂、惠群、臺東健康）居服督導個案總數儀表板，每週一早上 8 點由排程任務自動更新"
+  "description": "五間機構（平安、健康、快樂、惠群、臺東健康）居服督導個案儀表板。掛案以「週」為單位、實服以「月」為單位，每週日與週四凌晨由本機腳本與排程任務自動更新"
 }
 </script>
 <html lang="zh-TW">
@@ -151,7 +151,13 @@
       font-size: 10.5px; background: #f1f5f9; color: #475569;
       border-radius: 10px; padding: 2px 8px; white-space: nowrap;
     }
-    .district-chip b { color: #1e293b; margin-left: 3px; font-weight: 700; }
+    .district-chip b { color: #1e293b; margin-left: 3px; font-weight: 700; }          /* 掛案 */
+    .district-chip i { color: #1565c0; font-weight: 700; font-style: normal; }         /* 實服 */
+    .district-chip i::before { content: "/"; color: #cbd5e1; font-weight: 400; margin: 0 1px; }
+    /* 當月有服務、但已不在掛案清單（月中結案／案號前綴不符）── 口徑差異，不是錯誤 */
+    .district-chip.only-served   { background: #fff7ed; color: #9a3412; }
+    .district-chip.only-served b { color: #c2410c; }
+    .district-chip.only-served i { color: #c2410c; }
 
     /* ── No data ── */
     .no-data-msg { text-align: center; padding: 50px 20px; color: #a0aec0; }
@@ -225,18 +231,26 @@
     .sup-table tr.gap-big td.c-served { color: #c2410c; }
     .sup-table tr.gap-big td:first-child span:last-child { color: #9a3412; font-weight: 600; }
 
+    /* ── 圖表說明小字 ── */
+    .chart-note {
+      font-size: 10.5px; color: #94a3b8; line-height: 1.6;
+      margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0;
+    }
+    .chart-note b { color: #64748b; font-weight: 700; }
+
   </style>
 </head>
 <body>
 
 <!-- ════════════════════════════════════════════════════════
-     DASHBOARD DATA — 由排程任務每週一 08:00 自動更新
-     請勿手動修改此區塊
+     DASHBOARD DATA — 由本機腳本 case_dashboard_update.py
+     於每週日、週四凌晨 04:00 自動注入，04:30 由 Cowork 排程
+     任務同步到 Artifact。請勿手動修改此區塊
      ════════════════════════════════════════════════════════ -->
 <!-- BEGIN_DASHBOARD_DATA -->
 <script id="dashboard-data-script">
 const DASHBOARD_DATA = {
-  "lastUpdated": "2026-09-15T00:16:13",
+  "lastUpdated": "2026-09-15T00:48:16",
   "history": [
     {
       "week": "2026-09-15",
@@ -483,7 +497,7 @@ const DASHBOARD_DATA = {
         "current": {
           "institutions": {
             "平安居家": 232,
-            "健康居家": 371,
+            "健康居家": 373,
             "快樂居家": 189,
             "惠群居家": 200,
             "臺東健康居家": 67
@@ -497,12 +511,12 @@ const DASHBOARD_DATA = {
               "陳詠銓-督導": 34
             },
             "健康居家": {
-              "李品昀-居督": 55,
+              "李品昀-居督": 56,
               "洪芳佳-居督": 55,
               "黃郁婷-居督": 53,
               "楊韻蓉-居督": 51,
               "張意倫-居督": 51,
-              "盧欣彥-居督": 49,
+              "盧欣彥-居督": 50,
               "周倖婷-居督": 38,
               "阮莚淳": 19
             },
@@ -521,6 +535,160 @@ const DASHBOARD_DATA = {
             "臺東健康居家": {
               "張詠程-督導員": 51,
               "賴俞汶-督導員": 16
+            }
+          },
+          "districts": {
+            "平安居家": {
+              "蘇宇萱-督導": {
+                "三民區": 32,
+                "鳥松區": 8,
+                "楠梓區": 2
+              },
+              "吳崇鈺-督導": {
+                "前鎮區": 28,
+                "大寮區": 10,
+                "小港區": 6,
+                "林園區": 5,
+                "三民區": 1
+              },
+              "陳佳鑫-督導": {
+                "鼓山區": 20,
+                "左營區": 19,
+                "前鎮區": 14
+              },
+              "陳詠銓-督導": {
+                "鳳山區": 21,
+                "三民區": 11,
+                "鹽埕區": 2
+              },
+              "張佳喻-督導": {
+                "鳳山區": 29,
+                "苓雅區": 15,
+                "新興區": 5,
+                "前金區": 4
+              }
+            },
+            "健康居家": {
+              "楊韻蓉-居督": {
+                "左營區": 30,
+                "鳳山區": 21
+              },
+              "周倖婷-居督": {
+                "苓雅區": 23,
+                "林園區": 10,
+                "鳳山區": 4,
+                "三民區": 1
+              },
+              "李品昀-居督": {
+                "前鎮區": 24,
+                "鳳山區": 13,
+                "鳥松區": 12,
+                "前金區": 4,
+                "鹽埕區": 3
+              },
+              "阮莚淳": {
+                "大社區": 8,
+                "鳳山區": 7,
+                "三民區": 2,
+                "前鎮區": 2
+              },
+              "盧欣彥-居督": {
+                "鼓山區": 19,
+                "新興區": 13,
+                "小港區": 12,
+                "三民區": 5,
+                "左營區": 1
+              },
+              "黃郁婷-居督": {
+                "三民區": 26,
+                "仁武區": 13,
+                "大樹區": 12,
+                "燕巢區": 2
+              },
+              "張意倫-居督": {
+                "三民區": 23,
+                "楠梓區": 16,
+                "岡山區": 5,
+                "橋頭區": 3,
+                "梓官區": 2,
+                "左營區": 2
+              },
+              "洪芳佳-居督": {
+                "鳳山區": 40,
+                "大寮區": 15
+              }
+            },
+            "快樂居家": {
+              "B059張藝諼": {
+                "三民區": 23,
+                "大樹區": 6,
+                "大寮區": 5,
+                "仁武區": 5,
+                "大社區": 4,
+                "彌陀區": 4,
+                "林園區": 3,
+                "燕巢區": 3,
+                "鳳山區": 2,
+                "前鎮區": 1
+              },
+              "B063許媖婷": {
+                "楠梓區": 15,
+                "小港區": 14,
+                "苓雅區": 14,
+                "左營區": 12,
+                "新興區": 3,
+                "鹽埕區": 3,
+                "鳥松區": 2,
+                "前金區": 2
+              },
+              "B066王亭予": {
+                "前鎮區": 26,
+                "鳳山區": 18
+              },
+              "B060簡荷庭": {
+                "鼓山區": 13,
+                "梓官區": 4,
+                "岡山區": 3,
+                "橋頭區": 2,
+                "三民區": 2
+              }
+            },
+            "惠群居家": {
+              "施治伶(萬丹鄉)": {
+                "潮州鎮": 23,
+                "竹田鄉": 15,
+                "萬丹鄉": 9,
+                "崁頂鄉": 6,
+                "東港鎮": 5,
+                "新園鄉": 3,
+                "南州鄉": 1
+              },
+              "鍾汶芸(竹田鄉)": {
+                "內埔鄉": 30,
+                "麟洛鄉": 9,
+                "長治鄉": 7,
+                "來義鄉": 5,
+                "萬巒鄉": 5,
+                "泰武鄉": 1,
+                "瑪家鄉": 1
+              },
+              "張霈旋(潮州鎮)": {
+                "屏東市": 65
+              },
+              "簡惠芬(屏東市)": {
+                "屏東市": 9,
+                "琉球鄉": 6
+              }
+            },
+            "臺東健康居家": {
+              "張詠程-督導員": {
+                "達仁鄉": 29,
+                "大武鄉": 22
+              },
+              "賴俞汶-督導員": {
+                "太麻里鄉": 14,
+                "金峰鄉": 2
+              }
             }
           },
           "month": "2026-09",
@@ -570,6 +738,171 @@ const DASHBOARD_DATA = {
             "臺東健康居家": {
               "張詠程-督導員": 53,
               "賴俞汶-督導員": 17
+            }
+          },
+          "districts": {
+            "平安居家": {
+              "蘇宇萱-督導": {
+                "三民區": 35,
+                "鳥松區": 8,
+                "楠梓區": 2,
+                "仁武區": 1
+              },
+              "吳崇鈺-督導": {
+                "前鎮區": 26,
+                "大寮區": 11,
+                "小港區": 7,
+                "林園區": 4,
+                "三民區": 1
+              },
+              "陳佳鑫-督導": {
+                "左營區": 21,
+                "鼓山區": 20,
+                "前鎮區": 14
+              },
+              "陳詠銓-督導": {
+                "鳳山區": 18,
+                "三民區": 9,
+                "鹽埕區": 2
+              },
+              "張佳喻-督導": {
+                "鳳山區": 27,
+                "苓雅區": 14,
+                "前金區": 5,
+                "新興區": 4
+              }
+            },
+            "健康居家": {
+              "楊韻蓉-居督": {
+                "左營區": 31,
+                "鳳山區": 20
+              },
+              "周倖婷-居督": {
+                "苓雅區": 25,
+                "林園區": 12,
+                "鳳山區": 2,
+                "三民區": 1
+              },
+              "李品昀-居督": {
+                "前鎮區": 25,
+                "鳳山區": 13,
+                "鳥松區": 11,
+                "前金區": 4,
+                "鹽埕區": 3,
+                "三民區": 1
+              },
+              "阮莚淳": {
+                "大社區": 10,
+                "鳳山區": 5,
+                "前鎮區": 3,
+                "三民區": 2
+              },
+              "盧欣彥-居督": {
+                "鼓山區": 19,
+                "新興區": 14,
+                "小港區": 11,
+                "三民區": 4,
+                "左營區": 1
+              },
+              "黃郁婷-居督": {
+                "三民區": 29,
+                "仁武區": 15,
+                "大樹區": 12,
+                "燕巢區": 2
+              },
+              "張意倫-居督": {
+                "三民區": 22,
+                "楠梓區": 16,
+                "岡山區": 6,
+                "橋頭區": 4,
+                "梓官區": 2,
+                "左營區": 2,
+                "仁武區": 1
+              },
+              "洪芳佳-居督": {
+                "鳳山區": 41,
+                "大寮區": 16
+              }
+            },
+            "快樂居家": {
+              "B059張藝諼": {
+                "三民區": 25,
+                "大樹區": 8,
+                "仁武區": 6,
+                "大寮區": 5,
+                "大社區": 4,
+                "彌陀區": 4,
+                "林園區": 3,
+                "燕巢區": 3,
+                "鳳山區": 2,
+                "前鎮區": 1
+              },
+              "B063許媖婷": {
+                "楠梓區": 18,
+                "苓雅區": 14,
+                "小港區": 13,
+                "左營區": 12,
+                "鳥松區": 4,
+                "新興區": 3,
+                "鹽埕區": 3,
+                "前金區": 3
+              },
+              "B066王亭予": {
+                "前鎮區": 25,
+                "鳳山區": 17
+              },
+              "B060簡荷庭": {
+                "鼓山區": 13,
+                "梓官區": 4,
+                "岡山區": 3,
+                "橋頭區": 2,
+                "三民區": 2
+              },
+              "B057鄒喜庭": {
+                "鳳山區": 1
+              }
+            },
+            "惠群居家": {
+              "施治伶(萬丹鄉)": {
+                "潮州鎮": 26,
+                "竹田鄉": 15,
+                "萬丹鄉": 10,
+                "崁頂鄉": 6,
+                "東港鎮": 5,
+                "新園鄉": 3,
+                "苓雅區": 1,
+                "南州鄉": 1
+              },
+              "鍾汶芸(竹田鄉)": {
+                "內埔鄉": 32,
+                "麟洛鄉": 10,
+                "長治鄉": 6,
+                "來義鄉": 5,
+                "萬巒鄉": 5,
+                "泰武鄉": 1,
+                "瑪家鄉": 1
+              },
+              "張霈旋(潮州鎮)": {
+                "屏東市": 65
+              },
+              "簡惠芬(屏東市)": {
+                "屏東市": 11,
+                "琉球鄉": 6,
+                "麟洛鄉": 1
+              },
+              "陳媛琳(萬巒鄉)": {
+                "萬巒鄉": 1
+              }
+            },
+            "臺東健康居家": {
+              "張詠程-督導員": {
+                "達仁鄉": 28,
+                "大武鄉": 25
+              },
+              "賴俞汶-督導員": {
+                "太麻里鄉": 15,
+                "金峰鄉": 2
+              }
             }
           },
           "month": "2026-08"
@@ -6400,7 +6733,7 @@ const DASHBOARD_DATA = {
     "2026-09": {
       "institutions": {
         "平安居家": 232,
-        "健康居家": 371,
+        "健康居家": 373,
         "快樂居家": 189,
         "惠群居家": 200,
         "臺東健康居家": 67
@@ -6414,12 +6747,12 @@ const DASHBOARD_DATA = {
           "陳詠銓-督導": 34
         },
         "健康居家": {
-          "李品昀-居督": 55,
+          "李品昀-居督": 56,
           "洪芳佳-居督": 55,
           "黃郁婷-居督": 53,
           "楊韻蓉-居督": 51,
           "張意倫-居督": 51,
-          "盧欣彥-居督": 49,
+          "盧欣彥-居督": 50,
           "周倖婷-居督": 38,
           "阮莚淳": 19
         },
@@ -6438,6 +6771,160 @@ const DASHBOARD_DATA = {
         "臺東健康居家": {
           "張詠程-督導員": 51,
           "賴俞汶-督導員": 16
+        }
+      },
+      "districts": {
+        "平安居家": {
+          "蘇宇萱-督導": {
+            "三民區": 32,
+            "鳥松區": 8,
+            "楠梓區": 2
+          },
+          "吳崇鈺-督導": {
+            "前鎮區": 28,
+            "大寮區": 10,
+            "小港區": 6,
+            "林園區": 5,
+            "三民區": 1
+          },
+          "陳佳鑫-督導": {
+            "鼓山區": 20,
+            "左營區": 19,
+            "前鎮區": 14
+          },
+          "陳詠銓-督導": {
+            "鳳山區": 21,
+            "三民區": 11,
+            "鹽埕區": 2
+          },
+          "張佳喻-督導": {
+            "鳳山區": 29,
+            "苓雅區": 15,
+            "新興區": 5,
+            "前金區": 4
+          }
+        },
+        "健康居家": {
+          "楊韻蓉-居督": {
+            "左營區": 30,
+            "鳳山區": 21
+          },
+          "周倖婷-居督": {
+            "苓雅區": 23,
+            "林園區": 10,
+            "鳳山區": 4,
+            "三民區": 1
+          },
+          "李品昀-居督": {
+            "前鎮區": 24,
+            "鳳山區": 13,
+            "鳥松區": 12,
+            "前金區": 4,
+            "鹽埕區": 3
+          },
+          "阮莚淳": {
+            "大社區": 8,
+            "鳳山區": 7,
+            "三民區": 2,
+            "前鎮區": 2
+          },
+          "盧欣彥-居督": {
+            "鼓山區": 19,
+            "新興區": 13,
+            "小港區": 12,
+            "三民區": 5,
+            "左營區": 1
+          },
+          "黃郁婷-居督": {
+            "三民區": 26,
+            "仁武區": 13,
+            "大樹區": 12,
+            "燕巢區": 2
+          },
+          "張意倫-居督": {
+            "三民區": 23,
+            "楠梓區": 16,
+            "岡山區": 5,
+            "橋頭區": 3,
+            "梓官區": 2,
+            "左營區": 2
+          },
+          "洪芳佳-居督": {
+            "鳳山區": 40,
+            "大寮區": 15
+          }
+        },
+        "快樂居家": {
+          "B059張藝諼": {
+            "三民區": 23,
+            "大樹區": 6,
+            "大寮區": 5,
+            "仁武區": 5,
+            "大社區": 4,
+            "彌陀區": 4,
+            "林園區": 3,
+            "燕巢區": 3,
+            "鳳山區": 2,
+            "前鎮區": 1
+          },
+          "B063許媖婷": {
+            "楠梓區": 15,
+            "小港區": 14,
+            "苓雅區": 14,
+            "左營區": 12,
+            "新興區": 3,
+            "鹽埕區": 3,
+            "鳥松區": 2,
+            "前金區": 2
+          },
+          "B066王亭予": {
+            "前鎮區": 26,
+            "鳳山區": 18
+          },
+          "B060簡荷庭": {
+            "鼓山區": 13,
+            "梓官區": 4,
+            "岡山區": 3,
+            "橋頭區": 2,
+            "三民區": 2
+          }
+        },
+        "惠群居家": {
+          "施治伶(萬丹鄉)": {
+            "潮州鎮": 23,
+            "竹田鄉": 15,
+            "萬丹鄉": 9,
+            "崁頂鄉": 6,
+            "東港鎮": 5,
+            "新園鄉": 3,
+            "南州鄉": 1
+          },
+          "鍾汶芸(竹田鄉)": {
+            "內埔鄉": 30,
+            "麟洛鄉": 9,
+            "長治鄉": 7,
+            "來義鄉": 5,
+            "萬巒鄉": 5,
+            "泰武鄉": 1,
+            "瑪家鄉": 1
+          },
+          "張霈旋(潮州鎮)": {
+            "屏東市": 65
+          },
+          "簡惠芬(屏東市)": {
+            "屏東市": 9,
+            "琉球鄉": 6
+          }
+        },
+        "臺東健康居家": {
+          "張詠程-督導員": {
+            "達仁鄉": 29,
+            "大武鄉": 22
+          },
+          "賴俞汶-督導員": {
+            "太麻里鄉": 14,
+            "金峰鄉": 2
+          }
         }
       }
     },
@@ -6485,6 +6972,171 @@ const DASHBOARD_DATA = {
           "張詠程-督導員": 53,
           "賴俞汶-督導員": 17
         }
+      },
+      "districts": {
+        "平安居家": {
+          "蘇宇萱-督導": {
+            "三民區": 35,
+            "鳥松區": 8,
+            "楠梓區": 2,
+            "仁武區": 1
+          },
+          "吳崇鈺-督導": {
+            "前鎮區": 26,
+            "大寮區": 11,
+            "小港區": 7,
+            "林園區": 4,
+            "三民區": 1
+          },
+          "陳佳鑫-督導": {
+            "左營區": 21,
+            "鼓山區": 20,
+            "前鎮區": 14
+          },
+          "陳詠銓-督導": {
+            "鳳山區": 18,
+            "三民區": 9,
+            "鹽埕區": 2
+          },
+          "張佳喻-督導": {
+            "鳳山區": 27,
+            "苓雅區": 14,
+            "前金區": 5,
+            "新興區": 4
+          }
+        },
+        "健康居家": {
+          "楊韻蓉-居督": {
+            "左營區": 31,
+            "鳳山區": 20
+          },
+          "周倖婷-居督": {
+            "苓雅區": 25,
+            "林園區": 12,
+            "鳳山區": 2,
+            "三民區": 1
+          },
+          "李品昀-居督": {
+            "前鎮區": 25,
+            "鳳山區": 13,
+            "鳥松區": 11,
+            "前金區": 4,
+            "鹽埕區": 3,
+            "三民區": 1
+          },
+          "阮莚淳": {
+            "大社區": 10,
+            "鳳山區": 5,
+            "前鎮區": 3,
+            "三民區": 2
+          },
+          "盧欣彥-居督": {
+            "鼓山區": 19,
+            "新興區": 14,
+            "小港區": 11,
+            "三民區": 4,
+            "左營區": 1
+          },
+          "黃郁婷-居督": {
+            "三民區": 29,
+            "仁武區": 15,
+            "大樹區": 12,
+            "燕巢區": 2
+          },
+          "張意倫-居督": {
+            "三民區": 22,
+            "楠梓區": 16,
+            "岡山區": 6,
+            "橋頭區": 4,
+            "梓官區": 2,
+            "左營區": 2,
+            "仁武區": 1
+          },
+          "洪芳佳-居督": {
+            "鳳山區": 41,
+            "大寮區": 16
+          }
+        },
+        "快樂居家": {
+          "B059張藝諼": {
+            "三民區": 25,
+            "大樹區": 8,
+            "仁武區": 6,
+            "大寮區": 5,
+            "大社區": 4,
+            "彌陀區": 4,
+            "林園區": 3,
+            "燕巢區": 3,
+            "鳳山區": 2,
+            "前鎮區": 1
+          },
+          "B063許媖婷": {
+            "楠梓區": 18,
+            "苓雅區": 14,
+            "小港區": 13,
+            "左營區": 12,
+            "鳥松區": 4,
+            "新興區": 3,
+            "鹽埕區": 3,
+            "前金區": 3
+          },
+          "B066王亭予": {
+            "前鎮區": 25,
+            "鳳山區": 17
+          },
+          "B060簡荷庭": {
+            "鼓山區": 13,
+            "梓官區": 4,
+            "岡山區": 3,
+            "橋頭區": 2,
+            "三民區": 2
+          },
+          "B057鄒喜庭": {
+            "鳳山區": 1
+          }
+        },
+        "惠群居家": {
+          "施治伶(萬丹鄉)": {
+            "潮州鎮": 26,
+            "竹田鄉": 15,
+            "萬丹鄉": 10,
+            "崁頂鄉": 6,
+            "東港鎮": 5,
+            "新園鄉": 3,
+            "苓雅區": 1,
+            "南州鄉": 1
+          },
+          "鍾汶芸(竹田鄉)": {
+            "內埔鄉": 32,
+            "麟洛鄉": 10,
+            "長治鄉": 6,
+            "來義鄉": 5,
+            "萬巒鄉": 5,
+            "泰武鄉": 1,
+            "瑪家鄉": 1
+          },
+          "張霈旋(潮州鎮)": {
+            "屏東市": 65
+          },
+          "簡惠芬(屏東市)": {
+            "屏東市": 11,
+            "琉球鄉": 6,
+            "麟洛鄉": 1
+          },
+          "陳媛琳(萬巒鄉)": {
+            "萬巒鄉": 1
+          }
+        },
+        "臺東健康居家": {
+          "張詠程-督導員": {
+            "達仁鄉": 28,
+            "大武鄉": 25
+          },
+          "賴俞汶-督導員": {
+            "太麻里鄉": 15,
+            "金峰鄉": 2
+          }
+        }
       }
     }
   }
@@ -6528,6 +7180,26 @@ const DASHBOARD_DATA = {
   </div>
 </div>
 
+<!-- ── 實服趨勢（以「月」為單位）── -->
+<div class="charts-row">
+  <div class="chart-box">
+    <h3>🧾 實服歷月趨勢（各機構）</h3>
+    <div class="chart-wrap"><canvas id="servedInstChart"></canvas></div>
+    <div class="chart-note">
+      <b>實線＋實心點</b>＝已定版的全月數字；<b>虛線＋空心點</b>＝仍在累計或補登中。
+      當月數字每天都會長，上月數字在次月 15 日前仍會因補登而變動，<b>次月 16 日後才定版</b>。
+    </div>
+  </div>
+  <div class="chart-box">
+    <h3>🧾 實服合計歷月趨勢（高雄 3 家 vs. 全部機構）</h3>
+    <div class="chart-wrap"><canvas id="servedTotalChart"></canvas></div>
+    <div class="chart-note">
+      實服是「當月累計」而非當下快照，所以用<b>月</b>比較，不與掛案的<b>週</b>線混畫，
+      避免月初半個月被拿去跟整個月比而出現假性下滑。
+    </div>
+  </div>
+</div>
+
 <!-- ── Aggregate total trend chart ── -->
 <div class="chart-box" style="margin-bottom:14px">
   <h3>🏢 掛案合計趨勢（高雄 3 家 vs. 全部機構）</h3>
@@ -6535,7 +7207,7 @@ const DASHBOARD_DATA = {
 </div>
 
 <!-- ── Supervisor detail section ── -->
-<div class="section-title">📋 各督導員案量明細<span id="sup-scope-label" style="font-size:11px;font-weight:600;color:#1565c0;margin-left:2px"></span><span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:4px">點擊督導員可展開各行政區案量（依掛案）</span></div>
+<div class="section-title">📋 各督導員案量明細<span id="sup-scope-label" style="font-size:11px;font-weight:600;color:#1565c0;margin-left:2px"></span><span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:4px">點擊督導員可展開各行政區案量，格式為 <b style="color:#475569">掛案</b>/<b style="color:#1565c0">實服</b>；橘色＝當月有服務但已不在掛案清單</span></div>
 <div class="sup-grid" id="sup-container"></div>
 
 <script>
@@ -6553,6 +7225,7 @@ const HOLD_COLOR    = "#cbd5e1";
 
 // ── 讀取資料 ─────────────────────────────────────────────────────────────────
 const { lastUpdated, history } = DASHBOARD_DATA;
+const SERVED_CACHE = DASHBOARD_DATA.servedCache || {};
 const hasData = history && history.length > 0;
 const latest  = hasData ? history[0] : null;
 const SERVED  = (latest && latest.served) || null;
@@ -6626,6 +7299,12 @@ function servedSups(instName) {
   const b = blockOf(MODE);
   return (b && b.supervisors && b.supervisors[instName]) || null;
 }
+// 實服的行政區明細（只有最近 4 週的 history 會帶；舊週次或舊格式回傳 null）
+function servedDists(instName) {
+  if (servedTotal(instName) == null) return null;
+  const b = blockOf(MODE);
+  return (b && b.districts && b.districts[instName]) || null;
+}
 
 // ── X 軸標籤：由實際日期產生「8/27(四)」──────────────────────────────────────
 const WEEKDAY_TW = ["日", "一", "二", "三", "四", "五", "六"];
@@ -6648,6 +7327,102 @@ function sumOrNull(entry, names) {
     sum += v;
   }
   return sum;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   實服（月口徑）共用工具
+   實服是「當月 1 號到某日」的累計值，不是當下快照：
+     ‧ 當月的數字每天都會長
+     ‧ 上月的數字在次月 15 日前仍會因補登而變動（腳本 REFRESH_PREV_UNTIL_DAY=15）
+   因此實服一律以「月」為單位比較，且只有次月 16 日之後的月份才算定版。
+   ══════════════════════════════════════════════════════════════════════════ */
+const SERVED_MONTHS = Object.keys(SERVED_CACHE).filter(k => /^\d{4}-\d{2}$/.test(k)).sort();
+
+function isFinalizedMonth(key) {
+  const m = /^(\d{4})-(\d{2})$/.exec(key);
+  if (!m) return false;
+  const y = Number(m[1]), mo = Number(m[2]);
+  return new Date() >= new Date(y, mo, 16);      // 次月 16 日起定版
+}
+function servedMonthLabel(key) {
+  const mo = monthNum(key);
+  if (!mo) return key;
+  const isCurrent = SERVED && SERVED.current && SERVED.current.month === key;
+  return isCurrent ? `${mo}月(至今)` : `${mo}月`;
+}
+function servedMonthNote(key) {
+  if (isFinalizedMonth(key)) return "（全月定版）";
+  if (SERVED && SERVED.current && SERVED.current.month === key) {
+    const d = SERVED.current.dayOfMonth, t = SERVED.current.daysInMonth;
+    return d && t ? `（1–${d}日／共${t}天，累計中）` : "（累計中）";
+  }
+  return "（補登中，次月 16 日後定版）";
+}
+function servedInstValue(key, name) {
+  const insts = (SERVED_CACHE[key] || {}).institutions || {};
+  const v = insts[name];
+  return v == null ? null : v;
+}
+function servedSumOrNull(key, names) {
+  let sum = 0;
+  for (const n of names) {
+    const v = servedInstValue(key, n);
+    if (v == null) return null;
+    sum += v;
+  }
+  return sum;
+}
+// 定版 → 實線實心點；未定版 → 虛線空心點
+function servedStyle(keys, color) {
+  return {
+    borderColor: color,
+    backgroundColor: color,
+    borderWidth: 2.5,
+    tension: 0.3,
+    fill: false,
+    spanGaps: true,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    pointBorderWidth: 2,
+    pointBorderColor: color,
+    pointBackgroundColor: keys.map(k => isFinalizedMonth(k) ? color : "#ffffff"),
+    segment: {
+      borderDash: s => isFinalizedMonth(keys[s.p1DataIndex]) ? undefined : [6, 4],
+    },
+  };
+}
+function servedTooltip(keys) {
+  return {
+    label: c => {
+      if (c.parsed.y == null) return ` ${c.dataset.label}：無資料`;
+      return ` ${c.dataset.label}：${c.parsed.y} 案${servedMonthNote(keys[c.dataIndex])}`;
+    },
+  };
+}
+const SERVED_CHART_OPTS = keys => ({
+  responsive: true, maintainAspectRatio: false,
+  interaction: { mode: "index", intersect: false },
+  plugins: {
+    legend: { position: "bottom", labels: { font: { size: 10 }, boxWidth: 12, padding: 8 } },
+    tooltip: { callbacks: servedTooltip(keys) },
+  },
+  scales: {
+    y: { beginAtZero: false, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { font: { size: 11 } } },
+    x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+  },
+});
+function servedChartGuard(canvasId) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return null;
+  if (!SERVED_MONTHS.length) {
+    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">🧾</div><p>尚無實服月資料<br>排程任務執行後將自動累積</p></div>`;
+    return null;
+  }
+  if (typeof Chart === "undefined") {
+    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">⚠️</div><p>圖表元件未載入<br>上方數字仍可正常查看</p></div>`;
+    return null;
+  }
+  return ctx;
 }
 
 // ── 更新時間標籤 ─────────────────────────────────────────────────────────────
@@ -6739,13 +7514,15 @@ function renderSupervisors() {
     const color   = topColors[i] || { border: "#718096", bar: "#718096" };
     const sups    = supData[instName] || {};
     const servMap = servedSups(instName);
+    const sdMap   = servedDists(instName);
 
     // 正規化：每位督導值可能是數字（舊格式）或 {count, districts}（新格式）
     const entries = Object.entries(sups).map(([supName, val]) => {
       const base = (val && typeof val === "object")
         ? { name: supName, count: val.count ?? 0, districts: val.districts || null }
         : { name: supName, count: val ?? 0, districts: null };
-      base.served = servMap ? (servMap[supName] ?? 0) : null;
+      base.served          = servMap ? (servMap[supName] ?? 0) : null;
+      base.servedDistricts = sdMap   ? (sdMap[supName] || {})  : null;
       return base;
     });
 
@@ -6753,7 +7530,10 @@ function renderSupervisors() {
     if (servMap) {
       Object.entries(servMap).forEach(([supName, n]) => {
         if (!entries.some(e => e.name === supName)) {
-          entries.push({ name: supName, count: 0, districts: null, served: n });
+          entries.push({
+            name: supName, count: 0, districts: null, served: n,
+            servedDistricts: sdMap ? (sdMap[supName] || {}) : null,
+          });
         }
       });
     }
@@ -6765,10 +7545,20 @@ function renderSupervisors() {
         <td style="text-align:left">督導</td><td>掛案</td><td>實服</td><td></td>
       </tr>`;
 
-    entries.forEach(({ name: supName, count: cnt, districts, served }) => {
-      const holdPct = Math.round((cnt / maxVal) * 100);
-      const servPct = served == null ? 0 : Math.round((served / maxVal) * 100);
-      const hasDist = districts && Object.keys(districts).length > 0;
+    entries.forEach(({ name: supName, count: cnt, districts, served, servedDistricts }) => {
+      const holdPct  = Math.round((cnt / maxVal) * 100);
+      const servPct  = served == null ? 0 : Math.round((served / maxVal) * 100);
+      // 行政區＝掛案區 ∪ 實服區。兩邊口徑不同，會有只出現在其中一邊的區。
+      const distMap  = districts || {};
+      const sDistMap = servedDistricts || null;
+      const regions  = Array.from(new Set(
+        Object.keys(distMap).concat(sDistMap ? Object.keys(sDistMap) : [])
+      )).sort((a, b) =>
+        ((distMap[b] ?? 0) - (distMap[a] ?? 0)) ||
+        (((sDistMap && sDistMap[b]) ?? 0) - ((sDistMap && sDistMap[a]) ?? 0)) ||
+        a.localeCompare(b, "zh-Hant")
+      );
+      const hasDist = regions.length > 0;
       const gap     = (served == null || cnt === 0) ? 0 : cnt - served;
       const gapBig  = served != null && cnt > 0 && (served === 0 || gap / cnt >= 0.2);
       const ico = hasDist
@@ -6790,9 +7580,16 @@ function renderSupervisors() {
           </td>
         </tr>`;
       if (hasDist) {
-        const chips = Object.entries(districts)
-          .map(([d, n]) => `<span class="district-chip">${d}<b>${n}</b></span>`)
-          .join("");
+        const chips = regions.map(r => {
+          const h = distMap[r] ?? 0;
+          const s = sDistMap ? (sDistMap[r] ?? 0) : null;
+          const onlyServed = h === 0 && s > 0;
+          const sHTML = s == null ? "" : `<i>${s}</i>`;
+          const tip = s == null
+            ? `${r}：掛案 ${h}（此週次無實服行政區資料）`
+            : `${r}：掛案 ${h}、實服 ${s}`;
+          return `<span class="district-chip${onlyServed ? " only-served" : ""}" title="${tip}">${r}<b>${h}</b>${sHTML}</span>`;
+        }).join("");
         rows += `
         <tr class="detail-row" style="display:none">
           <td colspan="4"><div class="district-list">${chips}</div></td>
@@ -6835,7 +7632,7 @@ function renderBarChart() {
     return;
   }
   if (typeof Chart === "undefined") {
-    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">\u26a0\ufe0f</div><p>圖表元件未載入<br>上方數字仍可正常查看</p></div>`;
+    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">⚠️</div><p>圖表元件未載入<br>上方數字仍可正常查看</p></div>`;
     return;
   }
   if (barChartInst) barChartInst.destroy();
@@ -6886,7 +7683,7 @@ function renderLineChart() {
     return;
   }
   if (typeof Chart === "undefined") {
-    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">\u26a0\ufe0f</div><p>圖表元件未載入<br>上方數字仍可正常查看</p></div>`;
+    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">⚠️</div><p>圖表元件未載入<br>上方數字仍可正常查看</p></div>`;
     return;
   }
   const slice     = history.slice(0, 12).reverse();
@@ -6921,7 +7718,54 @@ function renderLineChart() {
   });
 }
 
-// ── 折線圖（合計趨勢：高雄 3 家 vs. 全部機構）────────────────────────────────
+// ── 折線圖（實服歷月趨勢：各機構）────────────────────────────────────────────
+function renderServedInstChart() {
+  const ctx = servedChartGuard("servedInstChart");
+  if (!ctx) return;
+
+  const keys      = SERVED_MONTHS.slice(-13);
+  const labels    = keys.map(servedMonthLabel);
+  const instNames = hasData
+    ? Object.keys(latest.institutions)
+    : Object.keys((SERVED_CACHE[keys[keys.length - 1]] || {}).institutions || {});
+  const colorList = Object.values(COLORS);
+
+  const datasets = instNames.map((name, i) => Object.assign(
+    { label: name, data: keys.map(k => servedInstValue(k, name)) },
+    servedStyle(keys, colorList[i]?.border || "#718096")
+  ));
+
+  new Chart(ctx, { type: "line", data: { labels, datasets }, options: SERVED_CHART_OPTS(keys) });
+}
+
+// ── 折線圖（實服合計歷月趨勢：高雄 3 家 vs. 全部機構）────────────────────────
+function renderServedTotalChart() {
+  const ctx = servedChartGuard("servedTotalChart");
+  if (!ctx) return;
+
+  const keys     = SERVED_MONTHS.slice(-13);
+  const labels   = keys.map(servedMonthLabel);
+  const allNames = hasData
+    ? Object.keys(latest.institutions)
+    : Object.keys((SERVED_CACHE[keys[keys.length - 1]] || {}).institutions || {});
+
+  const datasets = [
+    Object.assign(
+      { label: "高雄 3 家合計", data: keys.map(k => servedSumOrNull(k, KAOHSIUNG_INSTITUTIONS)) },
+      servedStyle(keys, "#c2185b")
+    ),
+    Object.assign(
+      { label: `全部 ${allNames.length} 家合計`, data: keys.map(k => servedSumOrNull(k, allNames)) },
+      servedStyle(keys, "#37474f")
+    ),
+  ];
+  // 合計缺任一家就斷線，不顯示失真數字
+  datasets.forEach(d => { d.spanGaps = false; });
+
+  new Chart(ctx, { type: "line", data: { labels, datasets }, options: SERVED_CHART_OPTS(keys) });
+}
+
+// ── 折線圖（掛案合計趨勢：高雄 3 家 vs. 全部機構）────────────────────────────
 function renderTotalChart() {
   const ctx = document.getElementById("totalChart");
   if (!hasData || history.length < 2) {
@@ -6929,7 +7773,7 @@ function renderTotalChart() {
     return;
   }
   if (typeof Chart === "undefined") {
-    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">\u26a0\ufe0f</div><p>圖表元件未載入<br>上方數字仍可正常查看</p></div>`;
+    ctx.parentElement.innerHTML = `<div class="no-data-msg"><div class="icon">⚠️</div><p>圖表元件未載入<br>上方數字仍可正常查看</p></div>`;
     return;
   }
   const slice    = history.slice(0, 12).reverse();
@@ -6986,6 +7830,8 @@ function renderAll() {
 safe(setupSeg);
 renderAll();
 safe(renderLineChart);
+safe(renderServedInstChart);
+safe(renderServedTotalChart);
 safe(renderTotalChart);
 </script>
 </body>
